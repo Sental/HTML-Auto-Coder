@@ -1,7 +1,21 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package html.auto.coder;
 
+import java.awt.Desktop;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.geometry.Pos.CENTER_RIGHT;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
@@ -10,12 +24,15 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.stage.Screen;
 
 /**
  *
  * @author Mark
  */
 public class HTMLAutoCoder extends Application {
+    
+    Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
     
     Label paragraphLabel = new Label("Enter Paragraphs here then press the button.");
     TextArea paragraph = new TextArea();
@@ -40,6 +57,8 @@ public class HTMLAutoCoder extends Application {
     Label imageLabel = new Label("Enter an image link here then press the button.");
     TextArea image = new TextArea();
     Button ibtn = new Button();
+    
+    Button prbtn = new Button("Preview");
     
     Label completeLabel = new Label("Your complete code is displayed here:");
     TextArea complete = new TextArea();
@@ -165,6 +184,10 @@ public class HTMLAutoCoder extends Application {
             temp2.setText("0");}
         });
         
+        prbtn.setOnAction(e -> {
+            showhtml();
+        });
+        
         VBox srsm = new VBox(100, alignleft, aligncentre, alignright, alignjustify, underline);
         VBox rsm = new VBox(srsm);
         rsm.setMinWidth(100);
@@ -172,12 +195,12 @@ public class HTMLAutoCoder extends Application {
         rsm.setAlignment(CENTER_RIGHT);
         HBox subMaster = new HBox(lsm, rsm);
         
-        VBox master = new VBox(subMaster, complete);
+        VBox master = new VBox(subMaster, complete, prbtn);
         
         StackPane root = new StackPane();
         root.getChildren().add(master);
         
-        Scene scene = new Scene(root, 1366, 768);
+        Scene scene = new Scene(root, visualBounds.getWidth(), visualBounds.getHeight());
         
         primaryStage.setTitle("HTML Auto Coder");
         primaryStage.setScene(scene);
@@ -250,4 +273,27 @@ else {
     return result;
 }
 }
+
+public void showhtml() {
+    String write = "<html><head></head><body>" + complete.getText() + "</body></html>";
+    String file = "preview.html";
+    try {
+    FileWriter w = new FileWriter(file);
+    BufferedWriter writer = new BufferedWriter(w);
+    writer.write(write);
+    writer.close();}
+    catch (IOException e) {
+        System.out.println(e);
+    }
+    
+    URI oURL;
+        try {
+            oURL = new URI("preview.html");
+            Desktop.getDesktop().browse(oURL);}
+    catch (IOException e) {
+        System.out.println(e);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(HTMLAutoCoder.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 }
